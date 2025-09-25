@@ -41,7 +41,12 @@ const Z = `
   }
 
   const c = i.select("g");
-  const u = d3.zoom();
+  const u = d3.zoom()
+    // Ignore zoom interactions that originate from within the zoom menu
+    .filter((evt) => {
+      const target = evt && evt.target;
+      return !(target && target.closest && target.closest('.docsify-mermaid-zoom-menu'));
+    });
 
   const f = () => {
     u.on("zoom", (e) => c.attr("transform", e.transform)).scaleExtent([o, r]);
@@ -88,9 +93,11 @@ const Z = `
     var x;
     if (((x = e.dataset) == null ? void 0 : x.mermaidZoomMenu) === "true") return;
     const t = document.createElement("div");
+    t.className = 'docsify-mermaid-zoom-menu';
     const b = getComputedStyle(e).position;
     (!b || b === "static") && (e.style.position = "relative");
-    t.style.position = "absolute";
+    t.style.position = "relative";
+    t.style.width = "fit-content";
     t.style.top = "8px";
     t.style.right = "8px";
     t.style.zIndex = "1000";
@@ -102,6 +109,10 @@ const Z = `
     t.style.borderRadius = "6px";
     t.style.padding = "4px";
     t.style.boxShadow = "0 2px 8px rgba(0,0,0,0.12)";
+    // Prevent selection/dragging behavior on the menu itself
+    t.style.userSelect = 'none';
+    t.style.webkitUserSelect = 'none';
+    t.style.touchAction = 'manipulation';
     const isNoHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
     if (isNoHover) {
       // Always visible on touch/no-hover environments
@@ -124,12 +135,30 @@ const Z = `
         }, 150);
       });
     }
+    // Stop propagation on the entire menu to ensure drag/zoom does not engage when interacting with it
+    const stopEvents = [
+      'mousedown','mousemove','mouseup','click','wheel',
+      'touchstart','touchmove','touchend','pointerdown','pointermove','pointerup',
+      'dblclick','contextmenu'
+    ];
+    stopEvents.forEach((type) => {
+      t.addEventListener(type, (ev) => {
+        ev.stopPropagation();
+      }, { capture: true });
+    });
+
     const M = (E, S) => {
       const d = document.createElement("button");
       d.innerHTML = S;
       d.style.backgroundColor = "transparent";
       d.style.border = "none";
       d.style.cursor = "pointer";
+      d.draggable = false;
+      d.addEventListener('dragstart', (e) => e.preventDefault());
+      d.addEventListener('mousedown', (e) => e.preventDefault(), { capture: true });
+      d.style.userSelect = 'none';
+      d.style.webkitUserSelect = 'none';
+      d.style.touchAction = 'manipulation';
       d.addEventListener("click", () => E());
       return d;
     };
