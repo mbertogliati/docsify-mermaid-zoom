@@ -1,17 +1,17 @@
 {
-  "name": "docsify-mermaid-zoom",
+  "name": "@mbertogliati/docsify-mermaid-zoom",
   "version": "3.0.1",
   "type": "module",
   "main": "dist/docsify-mermaid-zoom.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/corentinleberre/docsify-mermaid-zoom.git"
+    "url": "git+https://github.com/mbertogliati/docsify-mermaid-zoom.git"
   },
   "keywords": [
     "Docsify",
     "Mermaid"
   ],
-  "author": "Corentin Le Berre",
+  "author": "Corentin Le Berre - Mateo Bertogliati",
   "license": "MIT",
   "scripts": {
     "dev": "vite serve src",
